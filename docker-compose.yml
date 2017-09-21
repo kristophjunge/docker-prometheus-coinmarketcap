@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  prometheus_coinmarketcap:
+    container_name: prometheus_coinmarketcap
+    build: .
+    environment:
+      TEST_MODE: "${TEST_MODE}"
+    ports:
+      - "9700:9700"
+    volumes:
+      - "/etc/ssl/certs:/etc/ssl/certs" # Needed for HTTPS calls
