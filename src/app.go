@@ -11,22 +11,10 @@ import (
     "errors"
 )
 
-var indexHtml = string(`
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>CoinMarketCap Exporter</title>
-    </head>
-    <body>
-        <h1>CoinMarketCap Exporter</h1>
-        <p><a href="/metrics">Metrics</a></p>
-    </body>
-</html>
-`)
+const LISTEN_ADDRESS = ":9204"
+const API_URL = "https://api.coinmarketcap.com/v1"
 
-// Read environment variables
-var testMode string = os.Getenv("TEST_MODE");
+var testMode string;
 
 type CoinMarketCapStatistics []struct {
     ID string `json:"id"`
@@ -63,14 +51,16 @@ func formatValue(key string, meta string, value string) string {
     return result
 }
 
-func queryCoinMarketCap() (string, error) {
+func queryData() (string, error) {
+    var err error
+
     // Build URL
-    url := "https://api.coinmarketcap.com/v1/ticker/?convert=EUR&limit=20"
+    url := API_URL + "/ticker/?convert=EUR&limit=20"
 
     // Perform HTTP request
-    resp, httpErr := http.Get(url);
-    if httpErr != nil {
-        return "", httpErr;
+    resp, err := http.Get(url);
+    if err != nil {
+        return "", err;
     }
 
     // Parse response
@@ -78,10 +68,10 @@ func queryCoinMarketCap() (string, error) {
     if resp.StatusCode != 200 {
         return "", errors.New("HTTP returned code " + integerToString(resp.StatusCode))
     }
-    bodyBytes, ioErr := ioutil.ReadAll(resp.Body)
+    bodyBytes, err := ioutil.ReadAll(resp.Body)
     bodyString := string(bodyBytes)
-    if ioErr != nil {
-        return "", ioErr;
+    if err != nil {
+        return "", err;
     }
 
     return bodyString, nil;
@@ -102,14 +92,14 @@ func getTestData() (string, error) {
 func metrics(w http.ResponseWriter, r *http.Request) {
     log.Print("Serving /metrics")
 
-    up := 1
-
+    var up = 1
     var jsonString string
     var err error
+
     if (testMode == "1") {
         jsonString, err = getTestData()
     } else {
-        jsonString, err = queryCoinMarketCap()
+        jsonString, err = queryData()
     }
     if err != nil {
         log.Print(err)
@@ -144,12 +134,28 @@ func metrics(w http.ResponseWriter, r *http.Request) {
 
 func index(w http.ResponseWriter, r *http.Request) {
     log.Print("Serving /index")
-    io.WriteString(w, indexHtml)
+    html := `<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>CoinMarketCap Exporter</title>
+    </head>
+    <body>
+        <h1>CoinMarketCap Exporter</h1>
+        <p><a href="/metrics">Metrics</a></p>
+    </body>
+</html>`
+    io.WriteString(w, html)
 }
 
 func main() {
-    log.Print("CoinMarketCap exporter running")
+    testMode = os.Getenv("TEST_MODE")
+    if (testMode == "1") {
+        log.Print("Test mode is enabled")
+    }
+
+    log.Print("CoinMarketCap exporter listening on " + LISTEN_ADDRESS)
     http.HandleFunc("/", index)
     http.HandleFunc("/metrics", metrics)
-    http.ListenAndServe(":9700", nil)
+    http.ListenAndServe(LISTEN_ADDRESS, nil)
 }

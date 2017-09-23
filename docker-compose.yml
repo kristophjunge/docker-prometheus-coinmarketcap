@@ -7,6 +7,6 @@ services:
     environment:
       TEST_MODE: "${TEST_MODE}"
     ports:
-      - "9700:9700"
+      - "9204:9204"
     volumes:
       - "/etc/ssl/certs:/etc/ssl/certs" # Needed for HTTPS calls

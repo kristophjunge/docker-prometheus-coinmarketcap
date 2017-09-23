@@ -1,6 +1,6 @@
 # Docker Prometheus CoinMarketCap Exporter
 
-Dockerized Prometheus exporter for monitoring of crypto currencies with data from coinmarketcap.com.
+Dockerized Prometheus exporter for monitoring of crypto currencies via coinmarketcap.com API.
 
 Written in Go.
 

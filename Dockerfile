@@ -6,6 +6,6 @@ WORKDIR /go/src/app
 
 COPY . .
 
-RUN go build -v -o bin/app app.go
+RUN go build -v -o bin/app src/app.go
 
 CMD ["./bin/app"]
