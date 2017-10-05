@@ -37,7 +37,7 @@ type CoinMarketCapStatistics []struct {
 }
 
 func integerToString(value int64) string {
-    return strconv.FormatInt(value, 16)
+    return strconv.FormatInt(value, 10)
 }
 
 func floatToString(value float64, precision int64) string {
