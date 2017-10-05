@@ -4,4 +4,4 @@ Dockerized Prometheus exporter for monitoring of crypto currencies via coinmarke
 
 Written in Go.
 
-Exports data of the top 20 crypto currencies.
+Exports data of the top 50 crypto currencies.

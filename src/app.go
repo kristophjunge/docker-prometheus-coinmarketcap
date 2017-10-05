@@ -81,7 +81,7 @@ func queryData() (string, error) {
     var err error
 
     // Build URL
-    url := API_URL + "/ticker/?convert=EUR&limit=20"
+    url := API_URL + "/ticker/?convert=EUR&limit=50"
 
     // Perform HTTP request
     resp, err := http.Get(url);
